@@ -1,0 +1,31 @@
+version: '3.4'
+
+networks:
+  backend:
+
+services:
+  tcustomerdb:
+    container_name: tcustomer-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=passw@0r33d##
+    networks:
+      - backend
+    ports:
+      - 8004:1433 
+
+  customerwebapi:
+    container_name: tcustomer-api
+    image: ${DOCKER_REGISTRY-}customerwebapi
+    build:
+      context: .
+      dockerfile: CustomerWebAPI/Dockerfile
+    networks:
+      - backend
+    ports:
+      - 8005:80 
+    environment:
+      - DB_HOST=tcustomerdb
+      - DB_NAME=tcustomer
+      - DB_SA_PASSWORD=passw@0r33d##
